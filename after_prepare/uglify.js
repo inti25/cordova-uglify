@@ -23,8 +23,9 @@ var hookConfig = JSON.parse(fs.readFileSync(configFilePath));
 var isRelease = hookConfig.alwaysRun || (cliCommand.indexOf('--release') > -1);
 var recursiveFolderSearch = hookConfig.recursiveFolderSearch; // set this to false to manually indicate the folders to process
 var foldersToProcess = hookConfig.foldersToProcess; // add other www folders in here if needed (ex. js/controllers)
+var filesToExclude = hookConfig.filesToExclude;
 var cssMinifier = new CleanCSS(hookConfig.cleanCssOptions);
-
+var wwwPath;
 // Exit
 if (!isRelease) {
   return;
@@ -39,7 +40,6 @@ run();
  */
 function run() {
   platforms.forEach(function(platform) {
-    var wwwPath;
 
     switch (platform) {
       case 'android':
@@ -85,28 +85,34 @@ function processFiles(dir) {
   fs.readdir(dir, function(err, list) {
     if (err) {
       console.log('processFiles err: ' + err);
-
       return;
     }
 
     list.forEach(function(file) {
       file = path.join(dir, file);
-
       fs.stat(file, function(err, stat) {
-        if (stat.isFile()) {
+        if (stat.isFile() && !isExcludeFile(file)) {
           compress(file);
-
           return;
         }
-
         if (recursiveFolderSearch && stat.isDirectory()) {
           processFiles(file);
-
           return;
         }
       });
     });
   });
+}
+
+function isExcludeFile(file) {
+  for(i = 0; i < filesToExclude.length; i++) {
+    var eFile = path.join(wwwPath, filesToExclude[i]);
+    if(file == eFile) {
+      console.log('isExcludeFile file ' + file);
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -123,22 +129,18 @@ function compress(file) {
   switch (ext) {
     case '.js':
       console.log('uglifying js file ' + file);
-
       res = ngAnnotate(String(fs.readFileSync(file, 'utf8')), {
         add: true
       });
       result = UglifyJS.minify(res.src, hookConfig.uglifyJsOptions);
       fs.writeFileSync(file, result.code, 'utf8'); // overwrite the original unminified file
       break;
-
     case '.css':
       console.log('minifying css file ' + file);
-
       source = fs.readFileSync(file, 'utf8');
       result = cssMinifier.minify(source);
       fs.writeFileSync(file, result.styles, 'utf8'); // overwrite the original unminified file
       break;
-
     default:
       console.log('encountered a ' + ext + ' file, not compressing it');
       break;

@@ -1,10 +1,11 @@
 {
-    "alwaysRun": false,
+    "alwaysRun": true,
     "recursiveFolderSearch": true,
     "foldersToProcess": [
-        "js",
-        "css",
-        "build"
+        "scripts"
+    ],
+    "filesToExclude": [
+        "scripts/index.js"
     ],
     "uglifyJsOptions": {
         "compress": {

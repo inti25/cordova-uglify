@@ -1,16 +1,9 @@
 # cordova-uglify
 
-Cordova hook that allows you to uglify or minify your apps JavaScript and CSS.  It is using [UglifyJS2](https://github.com/mishoo/UglifyJS2) for JavaScript compression and [clean-css](https://github.com/GoalSmashers/clean-css) to minify CSS.
-
-[![NPM](https://nodei.co/npm/cordova-uglify.png?downloads=true&stars=true)](https://nodei.co/npm/cordova-uglify/)
-
-[![npm](https://img.shields.io/npm/dw/localeval.svg)](https://github.com/rossmartin/cordova-uglify)
-[![npm](https://img.shields.io/npm/dm/localeval.svg)](https://github.com/rossmartin/cordova-uglify)
-
 ## Install
 Install the following package below inside of your apps root folder.
 ```
-npm install cordova-uglify --save-dev
+npm install https://github.com/inti25/cordova-uglify.git
 ```
 After install an `after_prepare` folder will be added to your `hooks` folder with the `uglify.js` script in it.  A JSON config file (`uglify-config.json`) for the script will be added to the `hooks` folder.  The hook will automatically be given executable permission.
 
@@ -29,6 +22,9 @@ Once you have this hook installed it will compress your apps JavaScript and CSS 
     "js",
     "css",
     "build" // this is needed for Ionic 2 projects
+  ],
+  "filesToExclude": [
+        "scripts/index.js"
   ],
   "uglifyJsOptions": { // pass options to UglifyJS2 (you can include more than these below)
     "compress": {
@@ -57,6 +53,3 @@ As of 0.2.6 I removed the imagemin package because the version that this hook de
 
 ## Requirements
 Out of the box this hook requires Cordova 3.3.1-0.4.2 and above but it can work with versions 3.0.0 thru 3.3.0 if you manually indicate the path for the platforms directories on Android and iOS.  This is because the `CORDOVA_PLATFORMS` environment variable was not added until version 3.3.1-0.4.2 ([see this post by Dan Moore](http://www.mooreds.com/wordpress/archives/1425)).
-
-## License
-[MIT](https://github.com/rossmartin/cordova-uglify/blob/master/LICENSE)
